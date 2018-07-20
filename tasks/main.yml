@@ -1,5 +1,9 @@
 ---
 
+- name: Include variables by distro
+  include: vars.yml
+  tags: ['always']
+
 - name: Install mysql
   include: install-debian.yml
   when: ansible_distribution == 'Debian'
@@ -13,3 +17,7 @@
 - name: Configure mysql
   include: configure.yml
   tags: ['mysql-configure']
+
+- name: Secure mysql
+  include: secure-installation.yml
+  tags: ['mysql-secure-installation']

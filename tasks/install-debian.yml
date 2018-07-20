@@ -16,10 +16,26 @@
 
 
 
-- name: Ensure mysql pre packages are installed
+- name: Install mysql apt dependencies
   apt:
-    pkg: apt-transport-https
+    pkg: '{{ item }}'
     state: present
+    update_cache: yes
+    cache_valid_time: 86400
+    allow_unauthenticated: yes
+  with_items: '{{mysql_apt_dependencies}}'
+  register: mysql_install_packages
+
+- name: Install MySQL-python pip package
+  pip:
+    name: "{{ item }}"
+    state: present
+  with_items: '{{ mysql_pip_dependencies }}'
+
+#- name: Ensure mysql pre packages are installed
+#  apt:
+#    pkg: apt-transport-https
+#    state: present
 
 - name: Install apt keys
   apt_key:
@@ -40,3 +56,4 @@
   with_items:
     - mysql-community-client
     - mysql-community-server
+

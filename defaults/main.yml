@@ -5,10 +5,6 @@ mysql_enabled_on_startup: yes
 # Overwrite global my.cnf on every ansible run
 mysql_overwrite_global_mycnf: yes
 
-mysql_config_include_files: []
-#  - src: path/relative/to/playbook/file.cnf
-#  - { src: path/relative/to/playbook/anotherfile.cnf, force: yes }
-
 mysql_config_file: /etc/mysql/my.cnf
 mysql_config_include_dir: /etc/mysql/conf.d
 mysql_socket: /var/run/mysqld/mysqld.sock
