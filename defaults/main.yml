@@ -39,8 +39,6 @@ mysql_allowed_hosts:
 
 mysql_admin_force_password_update: false
 
-mysql_pin_repository: true
-
 # Overwrite global my.cnf on every ansible run
 mysql_overwrite_global_mycnf: 'yes'
 

@@ -21,3 +21,11 @@
 - name: Secure mysql
   include: secure-installation.yml
   tags: ['mysql-secure-installation']
+
+- name: Handle databases
+  include: databases.yml
+  tags: ['mariadb-databases']
+
+- name: Handle users
+  include: users.yml
+  tags: ['mariadb-users']
