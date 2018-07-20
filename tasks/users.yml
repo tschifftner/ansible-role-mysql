@@ -1,0 +1,52 @@
+---
+- name: 'Add/update mysql users'
+  mysql_user:
+    name: "{{ item.name }}"
+    host: "{{ item.host | default('localhost') }}"
+    password: "{{ item.password }}"
+    priv: "{{ item.priv | default('*.*:USAGE') }}"
+    state: "{{ item.state | default('present') }}"
+    append_privs: "{{ item.append_privs | default('no') }}"
+    login_user: '{{ _mysql_login_user }}'
+    login_password: '{{ _mysql_login_password | default(omit) }}'
+  no_log: mysql_debug == false
+  when: mysql_users|length and item.state is not defined or item.state != 'absent'
+  with_items: '{{ mysql_users }}'
+
+# For all localhost users create 127.0.0.1 alias
+- name: 'Add/update mysql users'
+  mysql_user:
+    name: "{{ item.name }}"
+    host: "127.0.0.1"
+    password: "{{ item.password }}"
+    priv: "{{ item.priv | default('*.*:USAGE') }}"
+    state: "{{ item.state | default('present') }}"
+    append_privs: "{{ item.append_privs | default('no') }}"
+    login_user: '{{ _mysql_login_user }}'
+    login_password: '{{ _mysql_login_password | default(omit) }}'
+  no_log: mysql_debug == false
+  when: mysql_users_create_ip_alias and mysql_users|length and (item.state is not defined or item.state != 'absent') and (item.host is not defined or item.host == 'localhost')
+  with_items: '{{ mysql_users }}'
+
+- name: Remove mysql users
+  mysql_user:
+    name: "{{ item.name }}"
+    host: "{{ item.host | default('localhost') }}"
+    state: absent
+    login_user: '{{ _mysql_login_user }}'
+    login_password: '{{ _mysql_login_password | default(omit) }}'
+  no_log: mysql_debug == false
+  when: mysql_users|length and item.state is defined and item.state == 'absent'
+  with_items: '{{ mysql_users }}'
+
+# For all localhost users create 127.0.0.1 alias
+- name: Remove mysql users
+  mysql_user:
+    name: "{{ item.name }}"
+    host: "127.0.0.1"
+    state: absent
+    login_user: '{{ _mysql_login_user }}'
+    login_password: '{{ _mysql_login_password | default(omit) }}'
+  no_log: mysql_debug == false
+  when: mysql_users|length and (item.state is defined and item.state == 'absent') and (item.host is not defined or item.host == 'localhost') and mysql_users_create_ip_alias
+  with_items: '{{ mysql_users }}'

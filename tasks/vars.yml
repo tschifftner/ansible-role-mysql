@@ -1,0 +1,45 @@
+---
+
+- name: 'Include variables for debian'
+  include_vars: debian-jessie.yml
+  when: (ansible_distribution == 'Debian' and ansible_distribution_version|int < 9)
+
+- name: 'Include variables for debian stretch+'
+  include_vars: debian-stretch.yml
+  when: (ansible_distribution == 'Debian' and ansible_distribution_version|int >= 9)
+
+- name: 'Include variables for ubuntu'
+  include_vars: ubuntu.yml
+  when: (ansible_distribution == 'Ubuntu')
+
+- name: 'Check if mysql is already installed'
+  shell: mysql -V | grep -o mysql
+  register: mysql_installed
+  ignore_errors: true
+  changed_when: false
+
+- name: 'Check root .my.cnf'
+  register: mycnf_file
+  stat:
+    path: '{{ mysql_admin_home }}/.my.cnf'
+
+- name: 'Set mysql facts'
+  set_fact:
+    mysql_not_installed: "{{ 'true' if mysql_installed.stdout == '' else 'false' }}"
+    _mysql_login_user: "root"
+    _mysql_login_password: ""
+    _mysql_cmd_login: '-u root'
+    _master_server: "{{ mysql_replication_master == '' or (mysql_replication_master != '' and mysql_server_id == 1) }}"
+
+# If root user has been removed, use new credentials
+- name: 'Set more maridb facts'
+  set_fact:
+    _mysql_login_user: "{{ mysql_admin_user }}"
+    _mysql_login_password: "{{ mysql_admin_password }}"
+    _mysql_cmd_login: '-u "{{ mysql_admin_user }}" -p"{{ mysql_admin_password }}"'
+  when: mycnf_file.stat is defined and mycnf_file.stat.exists
+
+- name: 'Set cmd login fact'
+  set_fact:
+    _mysql_cmd_login: '-u "{{ _mysql_login_user }}"'
+  when: mysql_not_installed == false and mysql_admin_password is not defined or mysql_admin_password == ''

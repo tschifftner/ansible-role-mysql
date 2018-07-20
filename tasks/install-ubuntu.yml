@@ -1,0 +1,33 @@
+---
+
+- name: Install mysql apt dependencies
+  apt:
+    pkg: '{{ item }}'
+    state: present
+    update_cache: yes
+    cache_valid_time: 86400
+    allow_unauthenticated: yes
+  with_items: '{{mysql_apt_dependencies}}'
+  register: mariadb_install_packages
+
+- name: Install MySQL-python pip package
+  pip:
+    name: "{{ item }}"
+    state: present
+  with_items: '{{ mysql_pip_dependencies }}'
+
+- name: Ensure mysql is installed
+  apt:
+    pkg: '{{ item }}'
+    state: present
+  with_items:
+    - mysql-client
+    - mysql-server
+  when: ansible_distribution == 'Ubuntu' and (ansible_distribution_version|int >= 18)
+
+- name: Ensure mysql is installed
+  apt:
+    pkg: mysql-server
+    state: present
+    cache_valid_time: 86400
+  when: ansible_distribution == 'Ubuntu' and (ansible_distribution_version|int <= 16)

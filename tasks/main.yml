@@ -1,0 +1,31 @@
+---
+
+- name: Include variables by distro
+  include: vars.yml
+  tags: ['always']
+
+- name: Install mysql
+  include: install-debian.yml
+  when: ansible_distribution == 'Debian'
+  tags: ['mysql-install']
+
+- name: Install mysql
+  include: install-ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'
+  tags: ['mysql-install']
+
+- name: Configure mysql
+  include: configure.yml
+  tags: ['mysql-configure']
+
+- name: Secure mysql
+  include: secure-installation.yml
+  tags: ['mysql-secure-installation']
+
+- name: Handle databases
+  include: databases.yml
+  tags: ['mariadb-databases']
+
+- name: Handle users
+  include: users.yml
+  tags: ['mariadb-users']

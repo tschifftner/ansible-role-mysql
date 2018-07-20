@@ -1,0 +1,12 @@
+---
+
+mysql_pip_dependencies:
+  - MySQL-python
+
+mysql_apt_dependencies:
+  - software-properties-common
+  - python-mysqldb
+  - python-pip
+  - python-dev
+  - default-libmysqlclient-dev
+  - apt-transport-https

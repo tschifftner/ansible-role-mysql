@@ -1,0 +1,13 @@
+---
+- name: Manage mysql databases
+  register: _mysql_databases
+  mysql_db:
+    name: "{{ item.name }}"
+    collation: "{{ item.collation | default('utf8_general_ci') }}"
+    encoding: "{{ item.encoding | default('utf8') }}"
+    state: present
+    login_user: '{{ _mysql_login_user }}'
+    login_password: '{{ _mysql_login_password | default(omit) }}'
+  no_log: mysql_debug == false
+  with_items: '{{ mysql_databases }}'
+  when: mysql_databases|length
