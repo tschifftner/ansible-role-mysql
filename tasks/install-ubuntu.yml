@@ -13,4 +13,5 @@
   apt:
     pkg: mysql-server
     state: present
+    cache_valid_time: 86400
   when: ansible_distribution == 'Ubuntu' and (ansible_distribution_version|int <= 16)
