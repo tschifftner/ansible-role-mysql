@@ -7,3 +7,10 @@
   with_items:
     - mysql-client
     - mysql-server
+  when: ansible_distribution == 'Ubuntu' and (ansible_distribution_version|int >= 18)
+
+- name: Ensure mysql is installed
+  apt:
+    pkg: mysql-server
+    state: present
+  when: ansible_distribution == 'Ubuntu' and (ansible_distribution_version|int <= 16)
