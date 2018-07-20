@@ -1,0 +1,53 @@
+---
+
+- name: Main configuration
+  register: _mysql_config_changed
+  template:
+    src: my.cnf
+    dest: "{{ mysql_config_file }}"
+    owner: root
+    group: root
+    mode: 0644
+    force: "{{ mysql_overwrite_global_mycnf }}"
+
+- name: Ensure additional configuration folder exists
+  file:
+    path: "{{ mysql_config_include_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: mysql_config_include_files|length
+
+- name: Copy additional configurations
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ mysql_config_include_dir }}/{{ item.src | basename }}"
+    owner: root
+    group: root
+    mode: 0644
+    force: "{{ item.force | default(false) }}"
+  with_items: '{{ mysql_config_include_files }}'
+  when: mysql_config_include_files|length
+  register: _mysql_additional_config_changed
+
+- name: Set startup settings and start mysql
+  service:
+    name: mysql
+    state: started
+    enabled: "{{ mysql_enabled_on_startup | default(yes) }}"
+
+- name: Restart mysql on config changes right away
+  service:
+    name: mysql
+    state: restarted
+  when: >
+    _mysql_config_changed is changed
+    or _mysql_additional_config_changed is changed
+  tags: ['skip_ansible_lint']
+
+- name: 'Wait for mysql to be started'
+  wait_for:
+    port: '{{ mysql_port }}'
+    delay: 3
+    timeout: 300

@@ -9,3 +9,7 @@
   include: install-ubuntu.yml
   when: ansible_distribution == 'Ubuntu'
   tags: ['mysql-install']
+
+- name: Configure mysql
+  include: configure.yml
+  tags: ['mysql-configure']

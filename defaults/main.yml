@@ -1,0 +1,154 @@
+---
+
+mysql_enabled_on_startup: yes
+
+# Overwrite global my.cnf on every ansible run
+mysql_overwrite_global_mycnf: yes
+
+mysql_config_include_files: []
+#  - src: path/relative/to/playbook/file.cnf
+#  - { src: path/relative/to/playbook/anotherfile.cnf, force: yes }
+
+mysql_config_file: /etc/mysql/my.cnf
+mysql_config_include_dir: /etc/mysql/conf.d
+mysql_socket: /var/run/mysqld/mysqld.sock
+
+mysql_default_hosts:
+  - localhost
+  - 127.0.0.1
+  - ::1
+
+mysql_apt_tools_packages:
+  - mysqltuner
+  - percona-toolkit
+
+mysql_admin_home: '/root'
+mysql_admin_user: 'admin'
+
+mysql_debug: false
+
+# This password is not secure! Please define your own password!
+mysql_admin_password:  "{{ ansible_machine_id | hash('sha1') | truncate(24, True, '') }}"
+
+# Hosts
+mysql_admin_hosts:
+  - 127.0.0.1
+  - ::1
+  - localhost
+
+mysql_allowed_hosts:
+  - 127.0.0.1
+  - ::1
+  - localhost
+
+mysql_admin_force_password_update: false
+
+mysql_pin_repository: true
+
+# Overwrite global my.cnf on every ansible run
+mysql_overwrite_global_mycnf: 'yes'
+
+mysql_config_include_files: []
+#  - src: path/relative/to/playbook/file.cnf
+#  - { src: path/relative/to/playbook/anotherfile.cnf, force: yes }
+
+# Databases.
+mysql_default_databases: []
+mysql_host_databases: []
+mysql_group_databases: []
+#   - name: example
+#     collation: utf8_general_ci
+#     encoding: utf8
+#     replicate: 1
+
+# Users.
+mysql_default_users: []
+mysql_host_users: []
+mysql_group_users: []
+#   - name: example
+#     host: 127.0.0.1
+#     password: secret
+#     priv: *.*:USAGE
+
+# Create users with host == localhost also with host == 127.0.0.1
+mysql_users_create_ip_alias: true
+
+mysql_install_tools: false
+
+mysql_download_files: []
+mysql_import_files: []
+
+# MySQL connection settings.
+mysql_port: "3306"
+mysql_bind_address: '0.0.0.0'
+mysql_datadir: /var/lib/mysql
+mysql_pid_file: /var/run/mysqld/mysqld.pid
+
+# Slow query log settings.
+mysql_slow_query_log_enabled: no
+mysql_slow_query_log_file: /var/log/mysql-slow.log
+mysql_slow_query_time: 2
+
+# Memory settings (default values optimized ~512MB RAM).
+mysql_key_buffer_size: "256M"
+mysql_max_allowed_packet: "128M"
+mysql_table_open_cache: "256"
+mysql_sort_buffer_size: "1M"
+mysql_read_buffer_size: "1M"
+mysql_read_rnd_buffer_size: "4M"
+mysql_myisam_sort_buffer_size: "64M"
+mysql_table_cache: 2000
+mysql_thread_cache_size: "8"
+mysql_query_cache_size: "16M"
+mysql_max_connections: 151
+mysql_tmp_table_size: '64M'
+mysql_max_heap_table_size: '64M'
+mysql_join_buffer_size: '3M'
+
+# Other settings.
+mysql_wait_timeout: 1800
+mysql_net_read_timeout: 120
+mysql_skip_name_resolve: true
+mysql_back_log: 100
+mysql_max_connect_errors: 10000
+mysql_open_files_limit: 20000
+mysql_interactive_timeout: 3600
+mysql_connect_timeout: 120
+
+# InnoDB settings.
+# Set .._buffer_pool_size up to 80% of RAM but beware of setting too high.
+mysql_innodb_file_per_table: "1"
+mysql_innodb_buffer_pool_size: "256M"
+# Set .._log_file_size to 25% of buffer pool size.
+mysql_innodb_log_file_size: "64M"
+mysql_innodb_log_buffer_size: "8M"
+mysql_innodb_flush_log_at_trx_commit: "2"
+mysql_innodb_lock_wait_timeout: 600
+mysql_innodb_additional_mem_pool_size: "8M"
+
+# mysqldump settings.
+mysql_mysqldump_max_allowed_packet: "64M"
+
+# Logging settings.
+mysql_log: ""
+mysql_log_error: /var/log/mysql.err
+mysql_syslog_tag: mysql
+
+# Replication settings (replication is only enabled if master/user have values).
+mysql_server_id: "1"
+mysql_max_binlog_size: "100M"
+mysql_expire_logs_days: "10"
+mysql_replication_role: ''
+mysql_replication_master: ''
+
+# Will be created if it does not exist
+#mysql_replication_username: ''
+#mysql_replication_password: ''
+
+mysql_credentials_file: []
+
+#
+# You should never have to overwrite these:
+#
+mysql_users: '{{ (mysql_default_users + mysql_host_users + mysql_group_users) | unique }}'
+mysql_databases: '{{ (mysql_default_databases + mysql_host_databases + mysql_group_databases) | unique }}'
