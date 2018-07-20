@@ -32,8 +32,6 @@ script:
   - ${DOCKER} mysql --version
   - ${DOCKER} mysql --version | grep '5.7'
 
-
-
 after_failure:
   - ${DOCKER} mysql --version
   - ${DOCKER} which mysql
