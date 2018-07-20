@@ -48,6 +48,7 @@
     repo: 'deb http://repo.mysql.com/apt/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release }} mysql-5.7'
     state: present
     update_cache: true
+    filename: mysql
 
 - name: Ensure mysql is installed
   apt:
