@@ -1,0 +1,9 @@
+---
+
+- name: Ensure mysql is installed
+  apt:
+    pkg: '{{ item }}'
+    state: present
+  with_items:
+    - mysql-client
+    - mysql-server

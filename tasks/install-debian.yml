@@ -1,0 +1,43 @@
+---
+
+- name: Install gpg (newer systems)
+  apt:
+    pkg: 'gpg'
+  when: >
+    (ansible_distribution == 'Debian' and ansible_distribution_version|int >= 9) or
+    (ansible_distribution == 'Ubuntu' and ansible_distribution_version|int >= '18.04')
+
+- name: Install gpg (older systems)
+  apt:
+    pkg: 'gnupg'
+  when: >
+    (ansible_distribution == 'Debian' and ansible_distribution_version|int <= 8) or
+    (ansible_distribution == 'Ubuntu' and ansible_distribution_version|int <= '16.04')
+
+
+
+- name: Ensure mysql pre packages are installed
+  apt:
+    pkg: apt-transport-https
+    state: present
+
+- name: Install apt keys
+  apt_key:
+    keyserver: "pgp.mit.edu"
+    id: "5072E1F5"
+    state: present
+  when: mysql_apt_keyid != ''
+
+- name: Install repositories
+  apt_repository:
+    repo: 'deb http://repo.mysql.com/apt/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release }} mysql-5.7'
+    state: present
+    update_cache: true
+
+- name: Ensure mysql is installed
+  apt:
+    pkg: '{{ item }}'
+    state: present
+  with_items:
+    - mysql-community-client
+    - mysql-community-server
